@@ -2,11 +2,11 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-braintree',
+  name: 'ember-cli-braintree',
 
-  contentFor: function(type) {
+  contentFor (type) {
     if (type === 'body') {
-      return '<script src="https://js.braintreegateway.com/v2/braintree.js"></script>';
+      return '<script src="https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js"></script>';
     }
-  },
+  }
 };

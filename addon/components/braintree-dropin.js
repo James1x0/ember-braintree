@@ -1,24 +1,63 @@
 /* global braintree */
+import Component from '@ember/component';
 
-import Em from 'ember';
+export default Component.extend({
+  authorization: null,
+  braintreeOptions: null,
 
-export default Em.Component.extend({
-  action: 'processBraintreeNonce',
-  token: null,
-  braintreeOptions: {},
+  didInsertElement () {
+    this.attach();
+  },
 
-  _setup: function() {
-    var handler = Em.run.bind(this, this._handler),
-        token = this.get('token');
+  willDestroy () {
+    this.teardown();
+  },
 
-    braintree.setup(token, 'dropin', Em.$.extend({
-      container: this.elementId,
-      paymentMethodNonceReceived: handler
-    }, this.get('braintreeOptions')));
-  }.on('didInsertElement'),
+  callIfAvailable (methodName, arg) {
+    const method = this.get(methodName);
 
-  _handler: function(event, nonce) {
-    this.sendAction('action', nonce);
-    return false;
+    if (method && typeof method === 'function') {
+      method(arg);
+    }
+  },
+
+  attach () {
+    const authorization = this.get('authorization'),
+          opts          = this.get('braintreeOptions') || {},
+          callReq       = this.get('callOnRequestable') === true || this.get('onNonce');
+
+    if (!authorization) {
+      return;
+    }
+
+    braintree.dropin.create(Object.assign({
+      authorization,
+      container: `#${this.get('elementId')}`
+    }, opts)).then(instance => {
+      this.set('__btInstance', instance);
+
+      this.callIfAvailable('updateRequestable', instance.requestPaymentMethod);
+      this.callIfAvailable('updateInstance', instance);
+
+      if (callReq || this.get('onRequestable')) {
+        instance.on('paymentMethodRequestable', event => {
+          this.callIfAvailable('onRequestable', event);
+
+          if (callReq) {
+            instance.requestPaymentMethod()
+              .then(payload => this.callIfAvailable('onNonce', payload.nonce))
+              .catch(err => this.callIfAvailable('onNonceError', err));
+          }
+        });
+      }
+    });
+  },
+
+  teardown () {
+    const btInstance = this.get('__btInstance');
+
+    if (btInstance && btInstance.teardown) {
+      btInstance.teardown();
+    }
   }
 });
