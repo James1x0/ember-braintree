@@ -1,19 +1,28 @@
-# ember-braintree
+# ember-cli-braintree
 
-Braintree's Drop-In Payment UI as an Ember component.
+Braintree's Drop-In Payment UI as an Ember component. (using the V3 client)
 
 ## Installation
 
 ```bash
-# From within your ember-cli project
-ember install:addon ember-braintree
+yarn add ember-cli-braintree
 ```
 
 ## Usage
 
 ```hbs
-{{!-- Must be inside of a <form> --}}
-{{braintree-dropin token=braintreeClientToken action='submit'}}
+{{braintree-dropin authorization=braintreeClientToken onNonce=(action 'myAction')}}
 ```
 
-When the form is submitted, the specified `action` will be called with the Braintree nonce.
+## Events
+#### updateRequestable
+Returns `requestPaymentMethod` function from braintree
+
+#### updateInstance
+Returns braintree instance
+
+#### onRequestable
+Returns a braintree event
+
+### onNonce
+When action is specified, the component calls "requestPaymentMethod" onRequestable, and then updates the nonce
