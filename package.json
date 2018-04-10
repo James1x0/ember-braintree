@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-braintree",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Braintree's Drop-In Payment UI as an Ember component.",
   "keywords": [
     "ember-addon"
