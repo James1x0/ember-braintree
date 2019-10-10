@@ -6,7 +6,7 @@ module.exports = {
 
   contentFor (type) {
     if (type === 'body') {
-      return '<script src="https://js.braintreegateway.com/web/dropin/1.20.0/js/dropin.min.js"></script>';
+      return '<script src="https://js.braintreegateway.com/web/dropin/1.20.3/js/dropin.min.js"></script>';
     }
   }
 };
